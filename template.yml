@@ -7,30 +7,46 @@ Globals:
   Function:
     Timeout: 3
 
+# Parameters are CloudFormation features to pass input
+# to your template when you create a stack
+Parameters:
+    FunctionNameSuffix:
+        Type: String
+
 Resources:
-  HelloWorldNode2Function:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  HelloWorldXNodeFunction:
+    # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function 
     Properties:
+      # !Sub performs string substitution
+      FunctionName: !Sub "hello-${FunctionNameSuffix}"
       CodeUri: .
       Handler: app.lambdaHandler
       Runtime: nodejs8.10
       Events:
-        HelloWorldNode2:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+        HelloWorldXNode:
+          # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api 
           Properties:
-            Path: /hello2
+            #Path: /hello2
+            Path: !Sub "/hello-${FunctionNameSuffix}"
             Method: get
+
+  #MyApi:
+  #  Type: AWS::Serverless::Api
+  #  Properties:
+  #      DefinitionUri: ./specs/swagger.yaml
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldNode2Api:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World 2 function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hellonode2/"
-  HelloWorldNode2Function:
+  HelloWorldXNodeApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World X function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello-${FunctionNameSuffix}/"
+  HelloWorldXNodeFunction:
     Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldNode2Function.Arn
-  HelloWorldNode2FunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World 2 function"
-    Value: !GetAtt HelloWorldNode2FunctionRole.Arn
+    Value: !GetAtt HelloWorldXNodeFunction.Arn
+  HelloWorldXNodeFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World X function"
+    Value: !GetAtt HelloWorldXNodeFunctionRole.Arn
